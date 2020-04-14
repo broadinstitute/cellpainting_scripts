@@ -1,0 +1,49 @@
+{
+  "IamFleetRole": "arn:aws:iam::VAR_AWS_ACCOUNT_NUMBER:role/aws-ec2-spot-fleet-role",
+  "AllocationStrategy": "lowestPrice",
+  "TargetCapacity": 5,
+  "SpotPrice": "0.10",
+  "ValidFrom": "2018-03-20T20:28:54Z",
+  "ValidUntil": "2019-07-20T20:28:54Z",
+  "TerminateInstancesWithExpiration": true,
+  "LaunchSpecifications": [
+    {
+      "ImageId": "ami-fad25980",
+      "InstanceType": "r3.large",
+      "KeyName": "VAR_KEYNAME",
+      "IamInstanceProfile": {
+        "Arn": "arn:aws:iam::VAR_AWS_ACCOUNT_NUMBER:instance-profile/ecsInstanceRole-instance-profile"
+      },
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/xvda",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "VolumeType": "gp2",
+            "VolumeSize": 8,
+            "SnapshotId": "snap-04007a196c0f3f398"
+          }
+        },
+        {
+          "DeviceName": "/dev/xvdcz",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "VolumeType": "gp2"
+          }
+        }
+      ],
+      "NetworkInterfaces": [
+        {
+          "DeviceIndex": 0,
+          "SubnetId": "VAR_SUBNET_ID",
+          "DeleteOnTermination": true,
+          "AssociatePublicIpAddress": true,
+          "Groups": [
+            "VAR_GROUP_ID"
+          ]
+        }
+      ]
+    }
+  ],
+  "Type": "maintain"
+}
