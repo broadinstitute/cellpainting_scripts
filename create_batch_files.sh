@@ -293,6 +293,7 @@ parallel \
     docker run \
     --rm \
     -e S6_LOGGING=1 \
+    --cpus=1 \
     --volume=${pipeline_dir}:/pipeline_dir \
     --volume=${filelist_dir}:/filelist_dir \
     --volume=${datafile_dir}:/datafile_dir \
