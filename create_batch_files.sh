@@ -274,7 +274,7 @@ group_opts="`head -1 ${groups_file} | tr "," "\n" | nl | awk '{print $2 "={" $1 
 
 project_name=$(pwd|cut -d"/" -f5)
 
-log_group_name=${project_name}_${batch_id}_${plate_id}
+log_group_name=${project_name}_${batch_id}
 
 if [ `aws logs describe-log-groups|grep "\"logGroupName\": \"$log_group_name\""|wc -l` -ne 1 ];
 then
