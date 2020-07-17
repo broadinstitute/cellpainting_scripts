@@ -234,8 +234,6 @@ docker run \
     in2csv -f json > ${groups_file}
 
 
-
-
 if [[ ${create_dcp_config} == "YES" ]];
 then
 
@@ -276,15 +274,23 @@ project_name=$(pwd|cut -d"/" -f5)
 
 log_group_name=${project_name}_${batch_id}
 
-if [ `aws logs describe-log-groups|grep "\"logGroupName\": \"$log_group_name\""|wc -l` -ne 1 ];
-then
-    aws logs create-log-group --log-group-name ${log_group_name}
-
-    aws logs put-retention-policy --log-group-name ${log_group_name} --retention-in-days 60
-fi;
+# More setup needed to get this to work
+# https://github.com/moby/moby/issues/16551#issuecomment-143599198
+# FIXME: Resolve this issue and re-enable logging
+# if [ `aws logs describe-log-groups|grep "\"logGroupName\": \"$log_group_name\""|wc -l` -ne 1 ];
+# then
+#     aws logs create-log-group --log-group-name ${log_group_name}
+# 
+#     aws logs put-retention-policy --log-group-name ${log_group_name} --retention-in-days 60
+# fi;
+# 
+# deleted these lines from `parallel` command below
+#    --log-driver=awslogs \
+#    --log-opt awslogs-group=${log_group_name} \
+#    --log-opt awslogs-stream=${group_name} \
 
 echo "Creating docker commands file $docker_cmd_file"
-
+    
 parallel \
     --dry-run \
     -a ${batchfile_dir}/${groups_filename} \
@@ -302,9 +308,6 @@ parallel \
     --volume=${tmp_dir}:/tmp_dir \
     --volume=${status_dir}:/status_dir \
     --volume=${pathname_basename}:${pathname_basename} \
-    --log-driver=awslogs \
-    --log-opt awslogs-group=${log_group_name} \
-    --log-opt awslogs-stream=${group_name} \
     ${cp_docker_image} \
     -p /batchfile_dir/Batch_data.h5 \
     -g ${group_opts} \
@@ -312,6 +315,5 @@ parallel \
     -o /output_dir \
     -t /tmp_dir \
     -d /status_dir/${group_name}.txt > ${docker_cmd_file}
-
 
 check_path exists ${docker_cmd_file}
