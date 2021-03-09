@@ -20,6 +20,10 @@ case $key in
     illum_pipeline_name="$2"
     shift
     ;;
+    --dir_above_project_dir)
+    dir_above_project_dir="$2"
+    shift
+    ;;
     --dont_overwrite_datafile)
     dont_overwrite_datafile=YES
     ;;
@@ -28,10 +32,6 @@ case $key in
     ;;
     --match_full_plate_id)
     match_full_plate_id=YES
-    ;;    
-    -t|--tmpdir)
-    tmp_dir="$2"
-    shift
     ;;
     *)
     echo "unknown option"
@@ -47,6 +47,8 @@ dont_overwrite_datafile="${dont_overwrite_datafile:-unspecified}"
 match_full_plate_id="${match_full_plate_id:-unspecified}"
 
 illum_pipeline_name="${illum_pipeline_name:-illum}"
+
+dir_above_project_dir="${dir_above_project_dir:-/home/ubuntu/bucket/projects}"
 
 # Match full plate id, or allow substring matches? 
 # Allowing substring matches is useful when the plate names are long e.g. cmqtlpl261-2019-mt__2019-06-10T10_44_25-Measurement2
@@ -85,11 +87,13 @@ datafile_with_illum=${datafile_dir}/load_data_with_illum.csv
 
 illum_base_dir=../../..
 
-illum_dir=`readlink -m ${illum_base_dir}`/${batch_id}/illum/${plate_id}
+project_name=$(basename $(readlink -m $illum_base_dir))
 
-illum_dir=`echo $illum_dir|sed "s/efs/bucket\/projects/g"`
+illum_dir=`readlink -m ${dir_above_project_dir}`/${project_name}/${batch_id}/illum/${plate_id}
 
 illum_dir=$(create_and_check_dir $illum_dir)
+
+echo Using ${illum_dir} as the directory for illumination correction outputs
 
 if [[ ${dont_overwrite_datafile} == "YES" ]]; then
     echo "n" | check_path not_exists ${datafile}
@@ -108,6 +112,7 @@ if [[ $check_result = 0 || $check_result = 1 ]]; then
         --index-directory "${image_dir}" \
         config.yml \
         ${datafile}
+
 fi
 
 check_path exists ${datafile}
