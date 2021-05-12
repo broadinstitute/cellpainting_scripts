@@ -108,20 +108,15 @@ check_result=$?
 if [[ $check_result = 0 || $check_result = 1 ]]; then
     rm -rf ${datafile}
 
-    python ${pe2loaddata_dir}/pe2loaddata.py \
+    pe2loaddata \
         --index-directory "${image_dir}" \
         config.yml \
-        ${datafile}
+        ${datafile} \
+        --illum --illum-directory ${illum_dir} --plate-id ${plate_id} --illum-output ${datafile_with_illum}
 
 fi
 
 check_path exists ${datafile}
-
-python ${pe2loaddata_dir}/append_illum_cols.py \
-    --plate-id ${plate_id} \
-    --illum-directory ${illum_dir} \
-    config.yml \
-    ${datafile} ${datafile_with_illum}
 
 check_path exists ${datafile_with_illum}
 
